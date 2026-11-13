@@ -1,0 +1,5 @@
+TO-DO for autonomous. This will change as we find more things to do and as we complete these things.
+
+1. Coordinate Translating from camera to center of robot. (Should be modular to allow us to change it when we build the robot)
+2. Accurate distance checking. Make the robot move to ~1-4 feet in front of the april tag to get clear, accurate information
+3. Ball color checking for Autonomous collection 
