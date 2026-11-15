@@ -12,11 +12,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagSingleDetection;
 
 import java.util.List;
+import java.util.Vector;
 
 public class AprilTagScanner {
 
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
+
+    private CoordinateTranslator coordinateTranslator = new CoordinateTranslator();
 
     public void initAprilTag(HardwareMap hwMap) {
         aprilTag = new AprilTagProcessor.Builder()
@@ -33,13 +36,16 @@ public class AprilTagScanner {
                 .build();
     }
 
+    // Using coordinateTranslator, this will add telemetry data from the center of the robot
     public void AprilTagTelemetry(Telemetry telemetry) {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
 
         for (AprilTagDetection detection : currentDetections) {
             if (detection.ftcPose != null) {
+                double[] translatedFtcPose = coordinateTranslator.TranslateVector3(detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z);
+
                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f (inch)",
-                        detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+                        translatedFtcPose[0], translatedFtcPose[1], translatedFtcPose[2]));
 
                 telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f (deg)",
                         detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
@@ -66,5 +72,18 @@ public class AprilTagScanner {
             }
         }
         return null;
+    }
+}
+
+// used to translate camera coordinates --> center of the robot coordinates
+class CoordinateTranslator {
+
+    private double xOffset = 0;
+    private double yOffset = 0;
+    private double zOffset = 0;
+
+    public double[] TranslateVector3(double x, double y, double z) {
+        double[] translatedVector3 = new double[] {x + xOffset, y + yOffset, z + zOffset};
+        return translatedVector3;
     }
 }
